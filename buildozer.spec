@@ -1,7 +1,7 @@
 [app]
 
-# Uygulama adı (telefonda görünen)
-title = Roboto'yu Kurtar
+# Uygulama adı (telefonda görünen) — kesme işareti aapt/gradle'ı bozduğu için yok
+title = Robotoyu Kurtar
 
 # Paket adı ve alan adı → birleşince benzersiz uygulama kimliği (com.aslan.robotoyukurtar)
 package.name = robotoyukurtar
