@@ -1,0 +1,14 @@
+# Derleme çıktıları ve geçici dosyalar (GitHub'a yüklenmesin)
+build/
+dist/
+bin/
+.buildozer/
+__pycache__/
+*.exe
+*.spec.bak
+_*.py
+*.zip
+save.json
+muzik_onizleme.wav
+
+# RobotoOyun.spec PyInstaller'a ait, Android derlemesinde gerekmez ama dursun
