@@ -10,5 +10,6 @@ _*.py
 *.zip
 save.json
 muzik_onizleme.wav
+roboto-android/
 
 # RobotoOyun.spec PyInstaller'a ait, Android derlemesinde gerekmez ama dursun
