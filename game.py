@@ -308,7 +308,8 @@ def _make_menu_music():
     return pygame.mixer.Sound(buffer=bytes(buf))
 
 
-ANDROID = "ANDROID_ARGUMENT" in os.environ
+ANDROID = any(k in os.environ for k in
+              ("ANDROID_ARGUMENT", "ANDROID_APP_PATH", "ANDROID_PRIVATE"))
 
 
 class _SilentSound:
@@ -338,11 +339,15 @@ class Game:
         # Masaüstünde pencere, Android'de tam ekran. Tüm çizim 1280x700'lük
         # sanal tuvale yapılır, sonra cihaz ekranına ölçeklenerek basılır.
         if ANDROID:
-            self.display = pygame.display.set_mode((0, 0))
+            # Cihazın gerçek çözünürlüğünü al, tam ekran aç
+            info = pygame.display.Info()
+            self.display = pygame.display.set_mode((info.current_w, info.current_h),
+                                                   pygame.FULLSCREEN)
         else:
             self.display = pygame.display.set_mode((SCREEN_W, SCREEN_H))
         pygame.display.set_caption("Roboto'yu Kurtar!")
         dw, dh = self.display.get_size()
+        self._grad_cache = {}    # gradyan yüzeyleri önbelleği (performans)
         self._scale = min(dw / SCREEN_W, dh / SCREEN_H)
         self._sw, self._sh = int(SCREEN_W * self._scale), int(SCREEN_H * self._scale)
         self._ox = (dw - self._sw) // 2
@@ -850,7 +855,8 @@ class Game:
             self.display.blit(self.screen, (0, 0))
         else:
             self.display.fill((0, 0, 0))
-            scaled = pygame.transform.smoothscale(self.screen, (self._sw, self._sh))
+            # smoothscale yerine scale: mobilde çok daha hızlı (kasmayı önler)
+            scaled = pygame.transform.scale(self.screen, (self._sw, self._sh))
             self.display.blit(scaled, (self._ox, self._oy))
 
     def _mouse_canvas(self):
@@ -1385,19 +1391,24 @@ class Game:
         surf.blit(hl, (rect.x, rect.y))
 
     def _smooth_gradient_rect(self, rect, top_c, bot_c, radius=14):
-        """CSS linear-gradient gibi yumuşak dikey gradient, yuvarlak köşeli."""
-        s = pygame.Surface((rect.w, rect.h), pygame.SRCALPHA)
-        for y in range(rect.h):
-            t  = y / max(rect.h - 1, 1)
-            cr = int(top_c[0] + (bot_c[0] - top_c[0]) * t)
-            cg = int(top_c[1] + (bot_c[1] - top_c[1]) * t)
-            cb = int(top_c[2] + (bot_c[2] - top_c[2]) * t)
-            pygame.draw.line(s, (cr, cg, cb, 255), (0, y), (rect.w - 1, y))
-        mask = pygame.Surface((rect.w, rect.h), pygame.SRCALPHA)
-        mask.fill((0, 0, 0, 0))
-        pygame.draw.rect(mask, (255, 255, 255, 255),
-                         (0, 0, rect.w, rect.h), border_radius=radius)
-        s.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        """Yumuşak dikey gradient, yuvarlak köşeli — üretilen yüzey önbelleğe alınır.
+        (Aynı boyut+renk her karede yeniden hesaplanmaz; mobilde kasmayı önler.)"""
+        key = (rect.w, rect.h, tuple(top_c), tuple(bot_c), radius)
+        s = self._grad_cache.get(key)
+        if s is None:
+            s = pygame.Surface((rect.w, rect.h), pygame.SRCALPHA)
+            for y in range(rect.h):
+                t  = y / max(rect.h - 1, 1)
+                cr = int(top_c[0] + (bot_c[0] - top_c[0]) * t)
+                cg = int(top_c[1] + (bot_c[1] - top_c[1]) * t)
+                cb = int(top_c[2] + (bot_c[2] - top_c[2]) * t)
+                pygame.draw.line(s, (cr, cg, cb, 255), (0, y), (rect.w - 1, y))
+            mask = pygame.Surface((rect.w, rect.h), pygame.SRCALPHA)
+            mask.fill((0, 0, 0, 0))
+            pygame.draw.rect(mask, (255, 255, 255, 255),
+                             (0, 0, rect.w, rect.h), border_radius=radius)
+            s.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+            self._grad_cache[key] = s
         self.screen.blit(s, rect.topleft)
 
     def _draw_button(self, text, x, y, w, h, color, shadow=True):

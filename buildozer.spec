@@ -15,7 +15,7 @@ source.exclude_dirs = build,dist,__pycache__,.git,.buildozer
 source.exclude_patterns = RobotoOyun.spec,*.exe,_*.py
 
 # Sürüm
-version = 1.0
+version = 1.1
 
 # Gereksinimler — Python + Pygame (SDL2).
 # Python 3.10.12'ye sabit: 3.11+ ile Pygame "longintrepr.h" hatası veriyor.
