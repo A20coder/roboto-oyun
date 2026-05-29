@@ -19,6 +19,12 @@ jobs:
           # Hedef Python ile aynı sürüm — Pygame longintrepr.h uyumu için
           python-version: '3.10.12'
 
+      - name: Java 17 kur (gradle/AGP bunu ister)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: Sistem bağımlılıkları
         run: |
           sudo apt-get update
@@ -41,10 +47,10 @@ jobs:
         if: failure()
         run: |
           echo "=================== HATA SATIRLARI ==================="
-          grep -nE "\[ERROR\]|Build failed|Traceback|fatal error|error:|No such file|FAILED|Aidl not found|RuntimeError|ModuleNotFound" build.log \
-            | grep -vEi "warning|discards qualifiers" | tail -n 60 || echo "(anahtar kelime bulunamadi)"
-          echo "=================== SON 250 SATIR ==================="
-          tail -n 250 build.log
+          grep -nE "\[ERROR\]|Build failed|Traceback|fatal error|error:|No such file|FAILED|Aidl not found|RuntimeError|ModuleNotFound|FAILURE:|What went wrong|Could not|Unsupported|> Task|requires Java|invalid source release|BUILD FAILED" build.log \
+            | grep -vEi "discards qualifiers" | tail -n 80 || echo "(anahtar kelime bulunamadi)"
+          echo "=================== SON 400 SATIR ==================="
+          tail -n 400 build.log
 
       - name: Tam derleme logunu yükle (her durumda)
         if: always()
