@@ -16,7 +16,8 @@ jobs:
       - name: Python kur
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          # Hedef Python ile aynı sürüm — Pygame longintrepr.h uyumu için
+          python-version: '3.10.12'
 
       - name: Sistem bağımlılıkları
         run: |

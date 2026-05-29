@@ -17,8 +17,9 @@ source.exclude_patterns = RobotoOyun.spec,*.exe,_*.py
 # Sürüm
 version = 1.0
 
-# Gereksinimler — Python + Pygame (SDL2). En kritik/kırılgan satır burası.
-requirements = python3,pygame
+# Gereksinimler — Python + Pygame (SDL2).
+# Python 3.10.12'ye sabit: 3.11+ ile Pygame "longintrepr.h" hatası veriyor.
+requirements = python3==3.10.12,pygame
 
 # Yatay kilit + tam ekran (oyun yatay tasarlandı)
 orientation = landscape
