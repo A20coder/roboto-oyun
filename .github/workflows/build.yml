@@ -37,11 +37,14 @@ jobs:
           set -o pipefail
           yes | buildozer android debug 2>&1 | tee build.log
 
-      - name: Hata olursa son 120 satırı göster
+      - name: Hata olursa asıl hatayı göster
         if: failure()
         run: |
-          echo "===================== SON 120 SATIR ====================="
-          tail -n 120 build.log
+          echo "=================== HATA SATIRLARI ==================="
+          grep -nE "\[ERROR\]|Build failed|Traceback|fatal error|error:|No such file|FAILED|Aidl not found|RuntimeError|ModuleNotFound" build.log \
+            | grep -vEi "warning|discards qualifiers" | tail -n 60 || echo "(anahtar kelime bulunamadi)"
+          echo "=================== SON 250 SATIR ==================="
+          tail -n 250 build.log
 
       - name: Tam derleme logunu yükle (her durumda)
         if: always()
