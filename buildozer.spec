@@ -33,7 +33,10 @@ android.presplash_color = #0f1428
 # Android API seviyeleri (Play Store 2024+ için hedef 34; min 21 = Android 5.0)
 android.api = 34
 android.minapi = 21
-android.archs = arm64-v8a, armeabi-v7a
+# NDK'yı Pygame/SDL2 reçeteleriyle uyumlu sürüme sabitle (r28 çok yeni, derlemeyi bozuyor)
+android.ndk = 25b
+# Tek mimari: tüm modern telefonlar arm64; derleme daha hızlı ve sağlam
+android.archs = arm64-v8a
 
 # İnternet gerektirmeyen, çevrimdışı oyun → ekstra izin yok
 android.allow_backup = True
