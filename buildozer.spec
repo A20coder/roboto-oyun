@@ -19,7 +19,8 @@ version = 1.0
 
 # Gereksinimler — Python + Pygame (SDL2).
 # Python 3.10.12'ye sabit: 3.11+ ile Pygame "longintrepr.h" hatası veriyor.
-requirements = python3==3.10.12,pygame
+# host ve hedef python aynı sürüm olmalı → hostpython3 de sabitlendi.
+requirements = hostpython3==3.10.12,python3==3.10.12,pygame
 
 # Yatay kilit + tam ekran (oyun yatay tasarlandı)
 orientation = landscape
