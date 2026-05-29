@@ -33,7 +33,23 @@ jobs:
           pip install buildozer "cython==0.29.36"
 
       - name: Android SDK lisanslarını kabul et + APK derle (debug)
-        run: yes | buildozer android debug
+        run: |
+          set -o pipefail
+          yes | buildozer android debug 2>&1 | tee build.log
+
+      - name: Hata olursa son 120 satırı göster
+        if: failure()
+        run: |
+          echo "===================== SON 120 SATIR ====================="
+          tail -n 120 build.log
+
+      - name: Tam derleme logunu yükle (her durumda)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+          if-no-files-found: ignore
 
       - name: APK'yı yükle (artifact)
         uses: actions/upload-artifact@v4
