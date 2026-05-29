@@ -40,8 +40,12 @@ jobs:
 
       - name: Android SDK lisanslarını kabul et + APK derle (debug)
         run: |
-          set -o pipefail
+          # 'yes' lisansları kabul eder ama bitince Broken pipe ile hata döndürür.
+          # pipefail KULLANMA; buildozer'ın GERÇEK çıkış kodunu PIPESTATUS ile al.
           yes | buildozer android debug 2>&1 | tee build.log
+          code=${PIPESTATUS[1]}
+          echo "buildozer çıkış kodu: $code"
+          exit $code
 
       - name: Hata olursa asıl hatayı göster
         if: failure()
